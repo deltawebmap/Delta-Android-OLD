@@ -1,0 +1,39 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Thanks to https://stackoverflow.com/questions/16893209/how-to-customize-a-progress-bar-in-android -->
+
+    <!-- Define the background properties like color etc -->
+    <item android:id="@android:id/background">
+        <shape>
+            <gradient
+                android:startColor="@color/colorPrimaryDark"
+                android:centerColor="@color/colorPrimaryDark"
+                android:centerY="1.0"
+                android:endColor="@color/colorPrimaryDark"
+                android:angle="0"
+                />
+            <corners android:bottomRightRadius="@dimen/standard_border_radius"
+                android:bottomLeftRadius="@dimen/standard_border_radius"
+                android:topLeftRadius="@dimen/standard_border_radius"
+                android:topRightRadius="@dimen/standard_border_radius" />
+        </shape>
+    </item>
+
+    <!-- Define the progress properties like start color, end color etc -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <gradient
+                    android:startColor="@color/colorAccent"
+                    android:centerColor="@color/colorAccent"
+                    android:centerY="1.0"
+                    android:endColor="@color/colorAccent"
+                    android:angle="0"
+                    />
+                <corners android:bottomRightRadius="@dimen/standard_border_radius"
+                    android:bottomLeftRadius="@dimen/standard_border_radius"
+                    android:topLeftRadius="@dimen/standard_border_radius"
+                    android:topRightRadius="@dimen/standard_border_radius" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>

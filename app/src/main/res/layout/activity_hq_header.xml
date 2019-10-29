@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/search_box_container_shape"
+    android:focusableInTouchMode="true"
+    tools:context=".activites.main.HqActivity"
+    android:elevation="12dp"
+    android:layout_weight="4">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:adjustViewBounds="true"
+        android:id="@+id/searchBtns">
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/serverIcon"
+            android:background="@drawable/standard_rounded"
+            android:src="@drawable/placeholder_icon"
+            android:onClick="ShowServerList"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageView
+            android:id="@+id/searchBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:alpha="0"
+            android:visibility="gone"
+            android:background="@drawable/standard_rounded"
+            android:onClick="CollapseSearch"
+            android:src="@drawable/baseline_arrow_back_white_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/search"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/search_box_shape"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/searchBtns"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/searchbar_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="Search"
+            android:src="@android:drawable/ic_menu_search" />
+
+        <EditText
+            android:id="@+id/tribeSearchQuery"
+            android:layout_width="0dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Search Tribe"
+            android:inputType="textPersonName"
+            android:nextFocusLeft="@id/search"
+            android:nextFocusUp="@id/search"
+            android:textColor="#eaeaea"
+            android:textColorHint="#666666"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/searchbar_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+
+
+</android.support.constraint.ConstraintLayout>

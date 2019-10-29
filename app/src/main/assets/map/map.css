@@ -1,0 +1,23 @@
+body {
+    margin:0;
+    padding:0;
+    background-color:#252629;
+}
+
+.html {
+    background-color:#252629;
+    margin:0;
+    padding:0;
+}
+
+.leaflet-control-attribution {
+    display:none;
+}
+
+.leaflet-control-zoom {
+    display:none;
+}
+
+.leaflet-container {
+    background-color:#252629;
+}
