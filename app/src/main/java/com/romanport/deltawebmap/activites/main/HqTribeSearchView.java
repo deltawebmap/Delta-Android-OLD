@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.romanport.deltawebmap.HttpTool;
 import com.romanport.deltawebmap.R;
 import com.romanport.deltawebmap.entities.SearchResult;
+import com.romanport.deltawebmap.entities.api.AppConfig;
 import com.romanport.deltawebmap.entities.api.guilds.GuildCreateSession;
 import com.romanport.deltawebmap.entities.api.items.ItemSearchInventoryDino;
 import com.romanport.deltawebmap.entities.api.items.ItemSearchPayload;
@@ -49,13 +50,15 @@ public class HqTribeSearchView extends ConstraintLayout {
     public EditText input;
     public ImageView oldBtn;
     public ImageView backBtn;
+    public AppConfig config;
     public List<SearchResult> results;
 
-    public void SetContent(RecyclerView content, EditText edit, ImageView oldBtn, ImageView backBtn) {
+    public void SetContent(RecyclerView content, EditText edit, ImageView oldBtn, ImageView backBtn, AppConfig config) {
         this.content = content;
         this.input = edit;
         this.oldBtn = oldBtn;
         this.backBtn = backBtn;
+        this.config = config;
         results = new LinkedList<>();
         content.setLayoutManager(new LinearLayoutManager(getContext()));
         content.setAdapter(new ResultsAdapter(this, latestActivity));
@@ -186,49 +189,51 @@ public class HqTribeSearchView extends ConstraintLayout {
 
         //Now, fetch items ItemSearchPayload
         final HqTribeSearchView context = this;
-        HttpTool.SendGet(getContext(), session.endpoint_tribes_itemsearch.replace("{query}", query), ItemSearchPayload.class, new Response.Listener<ItemSearchPayload>() {
-            @Override
-            public void onResponse(ItemSearchPayload response) {
-                //Check if we're still valid
-                if(!token.equals(resultToken)) {
-                    //Abort
-                    return;
-                }
-
-                //Lock
-                isLocked = true;
-
-                //Create data
-                List<SearchResult> rs = new LinkedList<>();
-                for(ItemSearchResult result : response.items) {
-                    SearchResult r = new SearchResult();
-                    r.callbackData = "";
-                    r.callbackId = -1;
-                    r.children = new LinkedList<>();
-                    r.img = result.item_icon;
-                    r.subtitle = "x"+result.total_count;
-                    r.title = result.item_displayname;
-                    r.invertImg = false;
-                    for(ItemSearchResultInventory inventory : result.owner_inventories) {
-                        SearchResult ir = new SearchResult();
-                        ItemSearchInventoryDino dino = response.inventories.get(inventory.type.toString()).get(inventory.id);
-                        ir.img = dino.img;
-                        ir.invertImg = true;
-                        ir.callbackId = 0;
-                        ir.callbackData = dino.id;
-                        ir.title = dino.displayName + " (x"+inventory.count+")";
-                        r.children.add(ir);
+        if(config.IsFeatureEnabled("ARK_SEARCH_TRIBE_INVENTORY")) {
+            HttpTool.SendGet(getContext(), session.endpoint_tribes_itemsearch.replace("{query}", query), ItemSearchPayload.class, new Response.Listener<ItemSearchPayload>() {
+                @Override
+                public void onResponse(ItemSearchPayload response) {
+                    //Check if we're still valid
+                    if(!token.equals(resultToken)) {
+                        //Abort
+                        return;
                     }
-                    rs.add(r);
+
+                    //Lock
+                    isLocked = true;
+
+                    //Create data
+                    List<SearchResult> rs = new LinkedList<>();
+                    for(ItemSearchResult result : response.items) {
+                        SearchResult r = new SearchResult();
+                        r.callbackData = "";
+                        r.callbackId = -1;
+                        r.children = new LinkedList<>();
+                        r.img = result.item_icon;
+                        r.subtitle = "x"+result.total_count;
+                        r.title = result.item_displayname;
+                        r.invertImg = false;
+                        for(ItemSearchResultInventory inventory : result.owner_inventories) {
+                            SearchResult ir = new SearchResult();
+                            ItemSearchInventoryDino dino = response.inventories.get(inventory.type.toString()).get(inventory.id);
+                            ir.img = dino.img;
+                            ir.invertImg = true;
+                            ir.callbackId = 0;
+                            ir.callbackData = dino.id;
+                            ir.title = dino.displayName + " (x"+inventory.count+")";
+                            r.children.add(ir);
+                        }
+                        rs.add(r);
+                    }
+
+                    //Now, add it and refresh
+                    results.addAll(rs);
+                    content.setAdapter(new ResultsAdapter(context, activity));
+
+                    DoUnlock();
                 }
-
-                //Now, add it and refresh
-                results.addAll(rs);
-                content.setAdapter(new ResultsAdapter(context, activity));
-
-                DoUnlock();
-            }
-        });
+            });
+        }
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
@@ -259,7 +264,6 @@ public class HqTribeSearchView extends ConstraintLayout {
             this.context = context;
             this.activity = activity;
             Integer i = context.results.size();
-            Log.d("awm-debug-c", i.toString());
         }
 
         @Override

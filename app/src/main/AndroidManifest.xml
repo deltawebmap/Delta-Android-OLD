@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activites.main.HqActivity"></activity>
+        <activity android:name=".activites.NoGuildsActivity"></activity>
+        <activity android:name=".activites.main.HqActivity" />
         <activity android:name=".activites.LoginActivity" />
         <activity android:name=".StartupActivity">
             <intent-filter>
@@ -35,7 +36,6 @@
         <service
             android:name=".gateway.ServiceWorker"
             android:enabled="true" />
-
         <service
             android:name=".notifications.NotificationWorker"
             android:enabled="true" />

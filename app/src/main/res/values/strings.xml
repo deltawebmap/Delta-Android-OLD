@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Delta Web Map</string>
-    <string name="app_name_short">Delta Map</string>
+    <string name="app_name_short">Delta for Ark</string>
 
     <!-- Startup -->
     <string name="startup_offline_title">Connection Error</string>
@@ -14,6 +14,15 @@
     <string name="login_privacy_policy">Privacy Policy</string>
     <string name="login_go">Sign In</string>
     <string name="login_return_failed">Sorry, login failed. Please try again.</string>
+
+    <!-- No guilds -->
+    <string name="no_guilds_title">No ARK Servers</string>
+    <string name="no_guilds_sub">Sorry, you don\'t have any ARK servers registered on your account. To use Delta Web Map, ask your server owner to add Delta Web Map to their server.</string>
+    <string name="no_guilds_go">Learn More</string>
+
+    <!-- Out of date -->
+    <string name="old_version_title">App Too Old</string>
+    <string name="old_version_sub">The app has continually fallen out of date and can no longer connect. Please update the app from the Google Play Store.</string>
 
     <!-- Service Worker -->
     <string name="sw_failed_status">Server returned an unexpected error.</string>

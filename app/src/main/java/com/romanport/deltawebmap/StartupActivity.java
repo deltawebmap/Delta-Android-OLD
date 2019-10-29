@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.romanport.deltawebmap.activites.LoginActivity;
+import com.romanport.deltawebmap.activites.NoGuildsActivity;
 import com.romanport.deltawebmap.activites.main.HqActivity;
 import com.romanport.deltawebmap.entities.api.AppConfig;
 import com.romanport.deltawebmap.entities.api.DeltaUser;
@@ -20,6 +21,13 @@ import com.romanport.deltawebmap.entities.api.DeltaUserServer;
 import com.romanport.deltawebmap.entities.api.LoginPreflightResponse;
 
 public class StartupActivity extends AppCompatActivity {
+
+    /* CONFIG; MOVE THIS LATER */
+
+    public String enviornment = "prod";
+    public Integer version = 0;
+
+    /* END CONFIG */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +66,7 @@ public class StartupActivity extends AppCompatActivity {
                 toast.show();
 
                 //Start the main view
-                LaunchService(r.user);
+                Run();
             }
         },new Response.Listener<Integer>() {
             @Override
@@ -74,14 +82,11 @@ public class StartupActivity extends AppCompatActivity {
     void Run() {
         //Request the config
         final Activity c = this;
-        HttpTool.SendGet(c, "https://config.deltamap.net/prod/app_config.json?v=0&p=android", AppConfig.class, new Response.Listener<AppConfig>() {
+        HttpTool.SendGet(c, "https://config.deltamap.net/"+enviornment+"/app_config.json?v=0&p=android", AppConfig.class, new Response.Listener<AppConfig>() {
             @Override
             public void onResponse(AppConfig response) {
                 //Check if the system is even up
-                if(response.status) {
-                    //Authenticate
-                    AuthAndRun(c, response);
-                } else {
+                if(!response.status) {
                     //Not up.
                     AlertDialog.Builder builder = new AlertDialog.Builder(c, R.style.HqTheme_alertDialog);
                     builder.setMessage(response.status_message).setTitle(R.string.startup_status_title);
@@ -92,7 +97,26 @@ public class StartupActivity extends AppCompatActivity {
                     });
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                    return;
                 }
+
+                //Check if we're within version requirements
+                if(response.oldest_versions.get("ANDROID") > version) {
+                    //Not up.
+                    AlertDialog.Builder builder = new AlertDialog.Builder(c, R.style.HqTheme_alertDialog);
+                    builder.setMessage(R.string.old_version_sub).setTitle(R.string.old_version_title);
+                    builder.setPositiveButton(R.string.startup_offline_retry, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Run();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    return;
+                }
+
+                //All good. Authenticate
+                AuthAndRun(c, response);
             }
         }, new Response.Listener<Integer>() {
             @Override
@@ -104,13 +128,13 @@ public class StartupActivity extends AppCompatActivity {
 
     }
 
-    void AuthAndRun(final Activity c, AppConfig config) {
+    void AuthAndRun(final Activity c, final AppConfig config) {
         //Request user data
         HttpTool.SendGet(this, config.api+"/users/@me", DeltaUser.class, new Response.Listener<DeltaUser>() {
             @Override
             public void onResponse(DeltaUser response) {
                 //Start the service
-                LaunchService(response);
+                LaunchService(response, config);
             }
         }, new Response.Listener<Integer>() {
             @Override
@@ -118,7 +142,9 @@ public class StartupActivity extends AppCompatActivity {
                 //Failed.
                 if (response == 401 || response == 402) {
                     //We're just not signed in
-                    c.startActivity(new Intent(c, LoginActivity.class));
+                    Intent i = new Intent(c, LoginActivity.class);
+                    i.putExtra("config", config);
+                    c.startActivity(i);
                     c.finish();
                 } else {
                     AlertOffline();
@@ -139,11 +165,15 @@ public class StartupActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    void LaunchService(DeltaUser u) {
+    void LaunchService(DeltaUser u, AppConfig config) {
         //Check if we have any servers
         if(u.servers.size() == 0) {
             //No servers!
-            //TODO: ADD HANDLE FOR NO SERVERS
+            Intent i = new Intent(this, NoGuildsActivity.class);
+            i.putExtra("config", config);
+            startActivity(i);
+            finish();
+            return;
         }
 
         //Check to see if we can find the last server used
@@ -158,6 +188,7 @@ public class StartupActivity extends AppCompatActivity {
         Intent ai = new Intent(this, HqActivity.class);
         ai.putExtra("user-data", u);
         ai.putExtra("server-data", lastServer);
+        ai.putExtra("config", config);
         startActivity(ai);
 
         //Finish this activity

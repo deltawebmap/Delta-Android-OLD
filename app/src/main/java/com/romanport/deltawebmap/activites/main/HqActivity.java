@@ -28,6 +28,7 @@ import com.romanport.deltawebmap.activites.main.dino.DinoDialogFragment;
 import com.romanport.deltawebmap.entities.BannerEvent;
 import com.romanport.deltawebmap.entities.DeltaVector2;
 import com.romanport.deltawebmap.entities.DeltaVector3;
+import com.romanport.deltawebmap.entities.api.AppConfig;
 import com.romanport.deltawebmap.entities.api.DeltaUser;
 import com.romanport.deltawebmap.entities.api.DeltaUserServer;
 import com.romanport.deltawebmap.entities.api.GuildOfflineData;
@@ -53,6 +54,7 @@ public class HqActivity extends AppCompatActivity implements GuildListDialogFrag
 
     public DeltaUser user;
     public DeltaUserServer server;
+    public AppConfig config;
 
     public GuildCreateSession session;
     public DeltaVector3 lastMapPos;
@@ -64,6 +66,12 @@ public class HqActivity extends AppCompatActivity implements GuildListDialogFrag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hq);
         events = new LinkedList<>();
+
+        //Get the user and server data
+        Intent intent = getIntent();
+        user = (DeltaUser)intent.getSerializableExtra("user-data");
+        config = (AppConfig) intent.getSerializableExtra("config");
+        server = (DeltaUserServer)intent.getSerializableExtra("server-data");
 
         //Grab important elements
         tribeSearchView = (HqTribeSearchView)findViewById(R.id.tribeSearch);
@@ -88,15 +96,10 @@ public class HqActivity extends AppCompatActivity implements GuildListDialogFrag
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
-        tribeSearchView.SetContent((RecyclerView)findViewById(R.id.tribeSearchContent), tribeSearchInput, (ImageView)findViewById(R.id.serverIcon), (ImageView)findViewById(R.id.searchBack));
+        tribeSearchView.SetContent((RecyclerView)findViewById(R.id.tribeSearchContent), tribeSearchInput, (ImageView)findViewById(R.id.serverIcon), (ImageView)findViewById(R.id.searchBack), config);
 
         //Set defaults
         lastMapPos = DeltaVector3.Create(-128f, 128f, 1f);
-
-        //Get the user and server data
-        Intent intent = getIntent();
-        user = (DeltaUser)intent.getSerializableExtra("user-data");
-        server = (DeltaUserServer)intent.getSerializableExtra("server-data");
 
         //Fill in parts of the UI with this server data
         AddWebImage(user.profile_image_url, (ImageView)findViewById(R.id.serverIcon));
